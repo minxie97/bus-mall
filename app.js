@@ -1,9 +1,10 @@
+/* eslint-disable no-undef */
 'use strict';
 
 const allProducts = [];
 
 function Product(url, name) {
-  this.name = name;
+  this.item = name;
   this.clicks = 0;
   this.timesShown = 0;
   this.url = url;
@@ -30,9 +31,8 @@ new Product('assets/unicorn.jpg', 'unicorn');
 new Product('assets/water-can.jpg', 'water-can');
 new Product('assets/wine-glass.jpg', 'wine-glass');
 
-let leftImageEl = document.getElementById('image1');
-let centerImageEl = document.getElementById('image2');
-let rightImageEl = document.getElementById('image3');
+let prodImgEl = document.getElementById('product-images');
+let imagesShown = 3;
 
 let randomIndex = [];
 
@@ -45,70 +45,115 @@ function imageRender () {
     }
   }
 
-  let left = allProducts[randomIndex[0]];
-  let center = allProducts[randomIndex[1]];
-  let right = allProducts[randomIndex[2]];
-
-  leftImageEl.src = left.url;
-  left.timesShown ++;
-  leftImageEl.name = left.name;
-
-  centerImageEl.src = center.url;
-  centerImageEl.name = center.name;
-  center.timesShown ++;
-
-  rightImageEl.src = right.url;
-  right.timesShown ++;
-  rightImageEl.name = right.name;
+  for (let i = 0; i < imagesShown; i++) {
+    let imageEl = document.createElement('img');
+    let image = allProducts[randomIndex[i]];
+    imageEl.setAttribute('id', image.item);
+    imageEl.src = image.url;
+    image.timesShown++;
+    imageEl.item = image.item;
+    prodImgEl.appendChild(imageEl);
+  }
 }
 
-
 imageRender();
+console.log(randomIndex);
 
 let rounds = 25;
 
 function handleClick(event){
   event.preventDefault();
-  let clickedEl = event.target;
-
   for (let i = 0; i < allProducts.length; i++) {
-    if (clickedEl.name === allProducts[i].name) {
+    if (event.target.id === allProducts[i].item) {
       allProducts[i].clicks++;
     }
   }
 
-  for (let i = 0; i < 3; i++){
+  for (let i = 0; i < imagesShown; i++){
     randomIndex.shift();
   }
+  prodImgEl.innerHTML = '';
 
   imageRender();
 
   rounds--;
   console.log(rounds);
-
   if (rounds === 0){
+    prodImgEl.removeEventListener('click', handleClick);
     alert ('You are all done.');
-    leftImageEl.removeEventListener('click', handleClick);
-    centerImageEl.removeEventListener('click', handleClick);
-    rightImageEl.removeEventListener('click', handleClick);
+    document.getElementById('focusgroup').removeChild(prodImgEl);
+    renderChart();
   }
 }
 
-leftImageEl.addEventListener('click', handleClick);
-centerImageEl.addEventListener('click', handleClick);
-rightImageEl.addEventListener('click', handleClick);
+prodImgEl.addEventListener('click', handleClick);
 
-let resultsEl = document.getElementById('resultsbutton');
-let resultsList = document.getElementById('resultsList');
+// let resultsEl = document.getElementById('resultsbutton');
+// // let resultsList = document.getElementById('resultsList');
 
-function getResults (event) {
-  event.preventDefault();
+// // function getResults (event) {
+// //   event.preventDefault();
 
+// //   for (let i = 0; i < allProducts.length; i++){
+// //     let resultsItem = document.createElement('li');
+// //     resultsItem.innerText = allProducts[i].item + ' had ' + allProducts[i].clicks + ' votes, and was seen ' + allProducts[i].timesShown + ' times.';
+// //     resultsList.appendChild(resultsItem);
+// //   }
+// // }
+
+// resultsEl.addEventListener('click', renderChart);
+
+function renderChart () {
+  let chartEl = document.getElementById('resultschart');
+  chartEl.innerHTML = '';
+
+  let ctx = chartEl.getContext('2d');
+  const label = [];
+  const clickData = [];
+  const showData = [];
   for (let i = 0; i < allProducts.length; i++){
-    let resultsItem = document.createElement('li');
-    resultsItem.innerText = allProducts[i].name + ' had ' + allProducts[i].clicks + ' votes, and was seen ' + allProducts[i].timesShown + ' times.';
-    resultsList.appendChild(resultsItem);
+    label.push(allProducts[i].item);
+    clickData.push(allProducts[i].clicks);
+    showData.push(allProducts[i].timesShown);
   }
+  // eslint-disable-next-line no-unused-vars
+  let productChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: label,
+      datasets:[{
+        label: 'Number of Clicks',
+        data: clickData,
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 5)',
+        borderWidth: 1
+      }, {
+        label:'Number of Times Shown',
+        data: showData,
+        backgroundColor: 'rgba(255, 159, 64, 0.2)',
+        borderColor: 'rgba(255, 159, 64, 5)',
+        borderWidth: 1
+      }],
+    },
+    options: {
+      plugins: {title: {
+        display: true,
+        text: 'Results',
+        padding: {
+          top: 10,
+          bottom: 20
+        },
+        font: {
+          size: 20
+        }
+      }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: 6
+        }
+      },
+    }
+  });
 }
-
-resultsEl.addEventListener('click', getResults);

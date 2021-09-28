@@ -1,9 +1,15 @@
 #product-images {
     display: grid;
     grid-template-columns: 350px 350px 350px;
+    grid-template-rows: 350px;
 }
 
-#image1, #image2, #image3 {
+img {
     height: 300px;
+    text-align: center;
+    border: thin solid black;
+}
+
+#instructions {
     text-align: center;
 }
