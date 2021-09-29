@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 'use strict';
 
-const allProducts = [];
+let allProducts = [];
 
 function Product(url, name) {
   this.item = name;
@@ -11,27 +11,36 @@ function Product(url, name) {
   allProducts.push(this);
 }
 
-new Product('assets/bag.jpg', 'bag');
-new Product('assets/banana.jpg', 'banana');
-new Product('assets/bathroom.jpg', 'bathroom');
-new Product('assets/boots.jpg', 'boots');
-new Product('assets/breakfast.jpg', 'breakfast');
-new Product('assets/bubblegum.jpg', 'bubblegum');
-new Product('assets/chair.jpg', 'chair');
-new Product('assets/cthulhu.jpg', 'cthulhu');
-new Product('assets/dog-duck.jpg', 'dog-duck');
-new Product('assets/dragon.jpg', 'dragon');
-new Product('assets/pen.jpg', 'pen');
-new Product('assets/pet-sweep.jpg', 'pet-sweep');
-new Product('assets/scissors.jpg', 'scissors');
-new Product('assets/shark.jpg', 'shark');
-new Product('assets/sweep.png', 'sweep');
-new Product('assets/tauntaun.jpg', 'tauntaun');
-new Product('assets/unicorn.jpg', 'unicorn');
-new Product('assets/water-can.jpg', 'water-can');
-new Product('assets/wine-glass.jpg', 'wine-glass');
+let retrievedProducts = localStorage.getItem('product-images');
+
+if (retrievedProducts) {
+  let parsedData = JSON.parse(retrievedProducts);
+  allProducts = parsedData;
+
+} else {
+  new Product('assets/bag.jpg', 'bag');
+  new Product('assets/banana.jpg', 'banana');
+  new Product('assets/bathroom.jpg', 'bathroom');
+  new Product('assets/boots.jpg', 'boots');
+  new Product('assets/breakfast.jpg', 'breakfast');
+  new Product('assets/bubblegum.jpg', 'bubblegum');
+  new Product('assets/chair.jpg', 'chair');
+  new Product('assets/cthulhu.jpg', 'cthulhu');
+  new Product('assets/dog-duck.jpg', 'dog-duck');
+  new Product('assets/dragon.jpg', 'dragon');
+  new Product('assets/pen.jpg', 'pen');
+  new Product('assets/pet-sweep.jpg', 'pet-sweep');
+  new Product('assets/scissors.jpg', 'scissors');
+  new Product('assets/shark.jpg', 'shark');
+  new Product('assets/sweep.png', 'sweep');
+  new Product('assets/tauntaun.jpg', 'tauntaun');
+  new Product('assets/unicorn.jpg', 'unicorn');
+  new Product('assets/water-can.jpg', 'water-can');
+  new Product('assets/wine-glass.jpg', 'wine-glass');
+}
 
 let prodImgEl = document.getElementById('product-images');
+
 let imagesShown = 3;
 
 let randomIndex = [];
@@ -73,7 +82,6 @@ function handleClick(event){
     randomIndex.shift();
   }
   prodImgEl.innerHTML = '';
-
   imageRender();
 
   rounds--;
@@ -83,25 +91,12 @@ function handleClick(event){
     alert ('You are all done.');
     document.getElementById('focusgroup').removeChild(prodImgEl);
     renderChart();
+    let stringifiedData = JSON.stringify(allProducts);
+    localStorage.setItem('product-images', stringifiedData);
   }
 }
 
 prodImgEl.addEventListener('click', handleClick);
-
-// let resultsEl = document.getElementById('resultsbutton');
-// // let resultsList = document.getElementById('resultsList');
-
-// // function getResults (event) {
-// //   event.preventDefault();
-
-// //   for (let i = 0; i < allProducts.length; i++){
-// //     let resultsItem = document.createElement('li');
-// //     resultsItem.innerText = allProducts[i].item + ' had ' + allProducts[i].clicks + ' votes, and was seen ' + allProducts[i].timesShown + ' times.';
-// //     resultsList.appendChild(resultsItem);
-// //   }
-// // }
-
-// resultsEl.addEventListener('click', renderChart);
 
 function renderChart () {
   let chartEl = document.getElementById('resultschart');
@@ -116,6 +111,7 @@ function renderChart () {
     clickData.push(allProducts[i].clicks);
     showData.push(allProducts[i].timesShown);
   }
+
   // eslint-disable-next-line no-unused-vars
   let productChart = new Chart(ctx, {
     type: 'bar',
@@ -151,7 +147,6 @@ function renderChart () {
       scales: {
         y: {
           beginAtZero: true,
-          max: 6
         }
       },
     }
