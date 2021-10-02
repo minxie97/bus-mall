@@ -11,13 +11,14 @@ function Product(url, name) {
   allProducts.push(this);
 }
 
+//gets info from previous round
 let retrievedProducts = localStorage.getItem('product-images');
 
-if (retrievedProducts) {
+if (retrievedProducts) { //if local storage isn't empty 
   let parsedData = JSON.parse(retrievedProducts);
   allProducts = parsedData;
 
-} else {
+} else { //if local storage is empty create products
   new Product('assets/bag.jpg', 'bag');
   new Product('assets/banana.jpg', 'banana');
   new Product('assets/bathroom.jpg', 'bathroom');
@@ -40,20 +41,20 @@ if (retrievedProducts) {
 }
 
 let prodImgEl = document.getElementById('product-images');
-
+//how many pictures do we want to show on the screen
 let imagesShown = 3;
 
 let randomIndex = [];
 
 function imageRender () {
-
+//randomizing the images shown
   while (randomIndex.length < allProducts.length) {
     let imageIndex = Math.floor(Math.random() * allProducts.length);
     if (randomIndex.indexOf(imageIndex) === -1){
       randomIndex.push(imageIndex);
     }
   }
-
+  //getting images to render on screen
   for (let i = 0; i < imagesShown; i++) {
     let imageEl = document.createElement('img');
     let image = allProducts[randomIndex[i]];
@@ -67,17 +68,17 @@ function imageRender () {
 
 imageRender();
 console.log(randomIndex);
-
+//how many clicks the user gets
 let rounds = 25;
 
 function handleClick(event){
   event.preventDefault();
-  for (let i = 0; i < allProducts.length; i++) {
+  for (let i = 0; i < allProducts.length; i++) { //checking to see what the clicked item matches and adding click to that product
     if (event.target.id === allProducts[i].item) {
       allProducts[i].clicks++;
     }
   }
-
+  //when clicked three current images move to back of array ad next 3 are shown
   for (let i = 0; i < imagesShown; i++){
     randomIndex.shift();
   }
@@ -89,15 +90,15 @@ function handleClick(event){
   if (rounds === 0){
     prodImgEl.removeEventListener('click', handleClick);
     alert ('You are all done.');
-    document.getElementById('focusgroup').removeChild(prodImgEl);
-    renderChart();
-    let stringifiedData = JSON.stringify(allProducts);
+    document.getElementById('focusgroup').removeChild(prodImgEl); //images container disappear
+    renderChart(); //chart renders when round ends
+    let stringifiedData = JSON.stringify(allProducts); 
     localStorage.setItem('product-images', stringifiedData);
   }
 }
-
+//eventlistener on parent container
 prodImgEl.addEventListener('click', handleClick);
-
+//the results chart
 function renderChart () {
   let chartEl = document.getElementById('resultschart');
   chartEl.innerHTML = '';
